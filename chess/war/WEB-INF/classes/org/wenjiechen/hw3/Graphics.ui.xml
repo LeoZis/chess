@@ -1,0 +1,28 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style field="css" type="org.wenjiechen.hw3.GameCss">
+		.highlighted {
+			outline: dotted green 2px;
+		}
+		
+		.lastmove {
+			outline: solid red 2px;
+		}
+		
+		td img {
+			display: block
+		}
+		td img {
+			display: block
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<g:Label ui:field="gameStatus" text="Status" />
+		<g:Label ui:field="gameTurn" text="Turn" />
+		<g:Label ui:field="gameResult" text="Result" />
+		<g:Label ui:field="promotionPromt" text="promotionPromt" />
+		<g:Grid ui:field="selectPromotion" />
+		<g:Grid ui:field="gameGrid" />
+	</g:HTMLPanel>
+</ui:UiBinder> 

@@ -1,0 +1,59 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
+<ui:image field="background" src="board.jpg"/>
+  <ui:style field="css" type="org.haoxiangzuo.hw3.GameCss">
+    .highlighted {
+      outline: solid red 5px;
+    }
+    .showMoveHL
+    {
+		outline: solid blue 4px;
+	}
+    td img {
+      display: block
+    }
+    .grid{
+	margin-top: 19px;
+	margin-left: 19px;
+	}
+	@sprite .back{
+		margin-top: 10px;
+		margin-left: 500px;
+		gwt-image: "background";
+		}
+	.status
+	{
+		margin-left: 500px;
+		font-family: "Lucida Console";
+		font-size: 20px;
+	}
+	.pro
+	{
+		margin-top:10px;
+		margin-left:600px;
+	}
+	.pro2
+	{
+		margin-top: 10px;
+		margin-left:600px;	
+	}
+	.button{
+		margin-left: 650px;
+		font-family: "Lucida Console";
+	}
+	.button2{
+		margin-left: 500px;
+		font-family: "Lucida Console";
+	}
+  </ui:style>
+  <g:HTMLPanel>
+  	<g:Button ui:field="show" text="Show Which Piece Can Move" styleName="{css.button2}"/>
+    <g:Label ui:field="gameStatus" text="Status" styleName="{css.status}"/>
+    <g:Button ui:field="reset" text="ResetGame" styleName="{css.button}"/>
+    <g:Grid ui:field="promotion" styleName = "{css.pro}"/>
+    <div class="{css.back}">
+    <g:Grid ui:field="gameGrid" styleName = "{css.grid}"/>
+    </div>
+    <g:Grid ui:field="promotion2" styleName = "{css.pro2}"/>
+  </g:HTMLPanel>
+</ui:UiBinder> 

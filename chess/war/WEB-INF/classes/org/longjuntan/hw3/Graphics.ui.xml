@@ -1,0 +1,26 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style field="css" type="org.longjuntan.hw3.GameCss">
+		.highlighted {
+			outline: dotted red 2px;
+		}
+		.blacktile {
+      background-color:#CCCCCC;
+    }
+     .possible {
+      outline: dotted orange 2px;
+    }
+
+		td img {
+			display: block
+		}
+	</ui:style>
+	<g:HTMLPanel>
+
+		<g:Label ui:field="gameStatus" text="Status" />
+		<g:Grid ui:field="gameGrid" />
+		<g:Button ui:field="restart" text="Start"/>
+		<g:Grid ui:field="promoteGrid" />
+	</g:HTMLPanel>
+</ui:UiBinder> 

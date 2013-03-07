@@ -1,0 +1,55 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  
+  <ui:style field="css" type="org.bohuang.hw3.GameCss">
+    .highlighted {
+      outline: solid red 2px;      
+    }
+    .selected {
+	outline: solid yellow 2px;
+
+	}
+	
+    .status {
+	margin-left:400px;
+	font-family: "Lucida Console";
+	font-size: 30px;
+
+	}
+    .grid{
+	margin-top:100px;
+	margin-left:400px;
+	boarder:5px solid grey;
+  outline:black solid thick;  
+    }
+    
+    .gridtop{
+  margin-bottom:auto;
+  margin-left:520px;
+  
+    }
+    
+    .gridbot{
+  margin-top:auto;
+  margin-left:520px;
+   
+    }
+    .button{
+    margin-left: 520px;
+    font-family: "Lucida Console";
+    font-size:30px;
+  }
+    
+    td img {
+      display: block
+    }
+  </ui:style>
+  <g:HTMLPanel>
+    <g:Label ui:field="gameStatus" styleName = "{css.status}"/>
+    <g:Button ui:field="resetButton" styleName = "{css.button}"/>
+    <g:Grid ui:field="topGrid" styleName = "{css.gridtop}"/>
+    <g:Grid ui:field="gameGrid" styleName = "{css.grid}"/>
+    <g:Grid ui:field="botGrid" styleName = "{css.gridbot}"/>
+  </g:HTMLPanel>
+</ui:UiBinder> 

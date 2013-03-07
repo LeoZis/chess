@@ -1,0 +1,25 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+  xmlns:g="urn:import:com.google.gwt.user.client.ui">
+  <ui:style field="css" type="org.shihweihuang.hw3.GameCss">
+    .highlighted {
+      outline: dotted #00FF00 4px;
+    }
+	.bigFont {
+	  font-size:24px;
+	  font-weight:1000;
+	  color:#0000FF;
+	}
+    td img {
+      display: block
+    }
+  </ui:style>
+  <g:HTMLPanel>
+    <g:Label ui:field="whoseTurn"/>
+    <g:Grid ui:field="gameGrid"/>
+    <g:Label ui:field="gameStatus" text="Status"/>
+    <g:Grid ui:field="promotionGrid"/>
+    <g:Button ui:field="restart"/>
+    <g:Label ui:field="logM"/>
+  </g:HTMLPanel>
+</ui:UiBinder> 
