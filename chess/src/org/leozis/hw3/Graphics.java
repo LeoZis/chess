@@ -4,14 +4,20 @@ import org.leozis.hw3.Presenter.View;
 import org.shared.chess.Color;
 import org.shared.chess.GameResult;
 import org.shared.chess.Piece;
+import org.shared.chess.State;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -45,6 +51,7 @@ public class Graphics extends Composite implements View {
 				final Image image = new Image();
 				board[row][col] = image;
 				image.setWidth("100%");
+				image.setHeight("100%");
 				final int i = row; 
 				final int j = col;
 				image.addClickHandler(new ClickHandler() {
@@ -53,10 +60,19 @@ public class Graphics extends Composite implements View {
 						presenter.clickedOn(i, j);
 					}
 				});
-				gameGrid.setWidget(row, col, image);
+
+				FlowPanel panel = new FlowPanel();
+				if (row % 2 == 0 && col % 2 == 1 || row % 2 == 1 && col % 2 == 0) {
+					panel.setStylePrimaryName("blackTile");
+				} else {
+					panel.setStylePrimaryName("whiteTile");
+				}
+				panel.add(image);
+
+				gameGrid.setWidget(row, col, panel);
 			}
 		}
-		
+
 		for (int i = 0; i < 4; i++) {
 			final Image image = new Image();
 			promote[i] = image;
@@ -70,116 +86,84 @@ public class Graphics extends Composite implements View {
 
 			promoteGrid.setWidget(0, i, image);
 			promoteGrid.setVisible(false);
-			
+
 		}
-		
+
 		promote[0].setResource(gameImages.whiteQ());
 		promote[1].setResource(gameImages.whiteR()); 
 		promote[2].setResource(gameImages.whiteN()); 
 		promote[3].setResource(gameImages.whiteB()); 
 		
+		//History
+		History.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				String token = event.getValue();
+
+				if (token.isEmpty()) {
+					presenter.setState(new State());
+				} else {
+					presenter.setState(StateEncoder.decode(token));
+				}
+				
+				presenter.setSelected(null);
+				presenter.clearHighlighted();
+				presenter.clearSelected();
+			}
+		});
 	}
 
 	@Override
 	public void setPiece(int row, int col, Piece p) {
 		if (p == null) {
-			if (this.isWhiteTile(row, col)) {
-				board[row][col].setResource(gameImages.blackTile());
-			} else {
-				board[row][col].setResource(gameImages.whiteTile()); 
-			}
+			board[row][col].setUrl("");
+			board[row][col].setWidth("100%");
+			board[row][col].setHeight("100%");
 			return;
 		}
 		switch (p.getKind()) {
 		case KING:
 			if (p.getColor().isWhite()) {
-				if(this.isWhiteTile(row, col)){
-					board[row][col].setResource(gameImages.whiteK_blkbg());				
-				}else{
-					board[row][col].setResource(gameImages.whiteK());
-				}
+				board[row][col].setResource(gameImages.whiteK());
 			} else {				
-				if(this.isWhiteTile(row, col)){
-					board[row][col].setResource(gameImages.blackK_blkbg());
-				}else{
-					board[row][col].setResource(gameImages.blackK());
-				}
+				board[row][col].setResource(gameImages.blackK());
 			}
 			break;
 		case PAWN:
 			if (p.getColor().isWhite()) {
-				if(this.isWhiteTile(row, col)){
-					board[row][col].setResource(gameImages.whiteP_blkbg());
-				}else{
-					board[row][col].setResource(gameImages.whiteP());
-				}
+				board[row][col].setResource(gameImages.whiteP());
 			} else {
-				if(this.isWhiteTile(row, col)){
-					board[row][col].setResource(gameImages.blackP_blkbg());
-				}else{
-					board[row][col].setResource(gameImages.blackP());
-				}
+				board[row][col].setResource(gameImages.blackP());
 			}
 			break;
 		case ROOK:
 			if (p.getColor().isWhite()) {
-				if(this.isWhiteTile(row, col)){
-					board[row][col].setResource(gameImages.whiteR_blkbg());
-				}else{
-					board[row][col].setResource(gameImages.whiteR());
-				}
+				board[row][col].setResource(gameImages.whiteR());
 			} else {
-				if(this.isWhiteTile(row, col)){
-					board[row][col].setResource(gameImages.blackR_blkbg());
-				}else{
-					board[row][col].setResource(gameImages.blackR());
-				}
+				board[row][col].setResource(gameImages.blackR());
 			}
 			break;
 		case KNIGHT:
 			if (p.getColor().isWhite()) {
-				if(this.isWhiteTile(row, col)){
-					board[row][col].setResource(gameImages.whiteN_blkbg());
-
-				}else{
-					board[row][col].setResource(gameImages.whiteN());
-				}
+				board[row][col].setResource(gameImages.whiteN());
 			} else {
-				if(this.isWhiteTile(row, col)){
-					board[row][col].setResource(gameImages.blackN_blkbg());
-				}else{
-					board[row][col].setResource(gameImages.blackN());
-				}
+				board[row][col].setResource(gameImages.blackN());
 			}
 			break;
 		case BISHOP:
 			if (p.getColor().isWhite()) {
-				if(this.isWhiteTile(row, col)){
-					board[row][col].setResource(gameImages.whiteB_blkbg());
-				}else{
-					board[row][col].setResource(gameImages.whiteB());
-				}
+				board[row][col].setResource(gameImages.whiteB());
+
 			} else {
-				if(this.isWhiteTile(row, col)){
-					board[row][col].setResource(gameImages.blackB_blkbg());
-				}else{
-					board[row][col].setResource(gameImages.blackB());
-				}
+				board[row][col].setResource(gameImages.blackB());
 			}
 			break;
 		case QUEEN:
 			if (p.getColor().isWhite()) {
-				if(this.isWhiteTile(row, col)){
-					board[row][col].setResource(gameImages.whiteQ_blkbg());
-				}else{
-					board[row][col].setResource(gameImages.whiteQ());
-				}
+				board[row][col].setResource(gameImages.whiteQ());
 			} else {
-				if(this.isWhiteTile(row, col)){
-					board[row][col].setResource(gameImages.blackQ_blkbg());
-				}else{
-					board[row][col].setResource(gameImages.blackQ());
-				}
+				board[row][col].setResource(gameImages.blackQ());
 			}
 			break;
 		default:
@@ -189,7 +173,6 @@ public class Graphics extends Composite implements View {
 
 	@Override
 	public void setHighlighted(int row, int col, boolean highlighted) {
-
 		Element element = board[row][col].getElement();
 		if (highlighted) {
 			element.setClassName(css.highlighted());
@@ -239,17 +222,14 @@ public class Graphics extends Composite implements View {
 			}
 		}
 	}
-	
-	private boolean isWhiteTile(int row, int col){
-		
-		if (row % 2 == 0 && col % 2 == 1 || row % 2 == 1 && col % 2 == 0) {
-			return true;
-		}else return false;
-
-	}
 
 	@Override
 	public void setPromoteVisible(boolean visible) {
 		this.promoteGrid.setVisible(visible);
+	}
+	
+	@Override
+	public void setHistory(String hist){
+		History.newItem(hist);
 	}
 }

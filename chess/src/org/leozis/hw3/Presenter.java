@@ -42,6 +42,8 @@ public class Presenter {
 		void setSelected(int row, int col, boolean selected);
 
 		void setPromoteVisible(boolean b);
+		
+		void setHistory(String hist);
 	}
 
 	private State state;
@@ -85,25 +87,7 @@ public class Presenter {
 	 * @param row
 	 * @param col
 	 */
-	public void clickedOn(int row, int col) {
-		//History
-		History.addValueChangeHandler(new ValueChangeHandler<String>() {
-
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				String token = event.getValue();
-
-				if (token.isEmpty()) {
-					setState(new State());
-				} else {
-					setState(StateEncoder.decode(token));
-				}
-				
-				setSelected(null);
-
-			}
-		});
-		
+	public void clickedOn(int row, int col) {		
 		int invertR = 7 - row;
 		//if a pawn needs to be promoted, we ignore clicks on the board
 		if(this.getPawnPromotedToPosition() == null){
@@ -134,7 +118,7 @@ public class Presenter {
 					if(possibleMovesFromPosition.contains(m)){
 						stateChanger.makeMove(state, m);
 						this.setState(state);
-						History.newItem(StateEncoder.encode(state));
+						view.setHistory(StateEncoder.encode(state));
 					}
 					this.setSelected(null);
 					this.clearHighlighted();
@@ -164,13 +148,12 @@ public class Presenter {
 		if(possibleMovesFromPosition.contains(m)){
 			stateChanger.makeMove(state, m);
 			this.setState(state);
-			History.newItem(StateEncoder.encode(state));
+			view.setHistory(StateEncoder.encode(state));
 		}
 
 		this.setSelected(null);
 		this.clearHighlighted();
-		view.setSelected(7 - m.getFrom().getRow(),m.getFrom().getCol(),false);
-
+		this.clearSelected();
 		view.setPromoteVisible(false);
 		this.setPawnPromotedToPosition(null);
 	}
@@ -191,6 +174,14 @@ public class Presenter {
 		for (int r = 0; r < 8; r++) {
 			for (int c = 0; c < 8; c++) {
 				view.setHighlighted(r, c, false);
+			}
+		} 
+	}
+	
+	public void clearSelected(){
+		for (int r = 0; r < 8; r++) {
+			for (int c = 0; c < 8; c++) {
+				view.setSelected(r, c, false);
 			}
 		} 
 	}

@@ -1,5 +1,6 @@
 package org.leozis.hw3;
 
+import org.alexanderoskotsky.hw3.StateSerializer;
 import org.leozis.hw2.StateChangerImpl;
 import org.leozis.hw2_5.StateExplorerImpl;
 import org.leozis.hw3.Graphics;
@@ -27,7 +28,5 @@ public class ChessEntryPoint implements EntryPoint {
 	    presenter.setView(graphics);
 	    presenter.setState(state);
 	    RootPanel.get().add(graphics);
-	   
 	  }
-
 }
