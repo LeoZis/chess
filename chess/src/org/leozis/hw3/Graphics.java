@@ -9,7 +9,12 @@ import org.shared.chess.State;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.DragOverEvent;
+import com.google.gwt.event.dom.client.DragOverHandler;
+import com.google.gwt.event.dom.client.DragStartEvent;
+import com.google.gwt.event.dom.client.DragStartHandler;
+import com.google.gwt.event.dom.client.DropEvent;
+import com.google.gwt.event.dom.client.DropHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -61,6 +66,8 @@ public class Graphics extends Composite implements View {
 					}
 				});
 
+
+
 				FlowPanel panel = new FlowPanel();
 				if (row % 2 == 0 && col % 2 == 1 || row % 2 == 1 && col % 2 == 0) {
 					panel.setStylePrimaryName("blackTile");
@@ -93,7 +100,7 @@ public class Graphics extends Composite implements View {
 		promote[1].setResource(gameImages.whiteR()); 
 		promote[2].setResource(gameImages.whiteN()); 
 		promote[3].setResource(gameImages.whiteB()); 
-		
+
 		//History
 		History.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -106,7 +113,7 @@ public class Graphics extends Composite implements View {
 				} else {
 					presenter.setState(StateEncoder.decode(token));
 				}
-				
+
 				presenter.setSelected(null);
 				presenter.clearHighlighted();
 				presenter.clearSelected();
@@ -116,59 +123,74 @@ public class Graphics extends Composite implements View {
 
 	@Override
 	public void setPiece(int row, int col, Piece p) {
+		final Image image = board[row][col];
+		
+		this.attachDragOverHandler(image);
+		this.attachDragDropHandler(image,row,col);
+		this.attachDragStartHandler(image,row,col);
+
+		
 		if (p == null) {
-			board[row][col].setUrl("");
-			board[row][col].setWidth("100%");
-			board[row][col].setHeight("100%");
+			image.setUrl("");
+			image.setWidth("100%");
+			image.setHeight("100%");
 			return;
 		}
 		switch (p.getKind()) {
 		case KING:
 			if (p.getColor().isWhite()) {
-				board[row][col].setResource(gameImages.whiteK());
+				image.setResource(gameImages.whiteK());
 			} else {				
-				board[row][col].setResource(gameImages.blackK());
+				image.setResource(gameImages.blackK());
 			}
 			break;
 		case PAWN:
 			if (p.getColor().isWhite()) {
-				board[row][col].setResource(gameImages.whiteP());
+				image.setResource(gameImages.whiteP());
 			} else {
-				board[row][col].setResource(gameImages.blackP());
+				image.setResource(gameImages.blackP());
 			}
 			break;
 		case ROOK:
 			if (p.getColor().isWhite()) {
-				board[row][col].setResource(gameImages.whiteR());
+				image.setResource(gameImages.whiteR());
 			} else {
-				board[row][col].setResource(gameImages.blackR());
+				image.setResource(gameImages.blackR());
 			}
 			break;
 		case KNIGHT:
 			if (p.getColor().isWhite()) {
-				board[row][col].setResource(gameImages.whiteN());
+				image.setResource(gameImages.whiteN());
 			} else {
-				board[row][col].setResource(gameImages.blackN());
+				image.setResource(gameImages.blackN());
 			}
 			break;
 		case BISHOP:
 			if (p.getColor().isWhite()) {
-				board[row][col].setResource(gameImages.whiteB());
+				image.setResource(gameImages.whiteB());
 
 			} else {
-				board[row][col].setResource(gameImages.blackB());
+				image.setResource(gameImages.blackB());
 			}
 			break;
 		case QUEEN:
 			if (p.getColor().isWhite()) {
-				board[row][col].setResource(gameImages.whiteQ());
+				image.setResource(gameImages.whiteQ());
 			} else {
-				board[row][col].setResource(gameImages.blackQ());
+				image.setResource(gameImages.blackQ());
 			}
 			break;
 		default:
 			break;
 		}
+		
+
+		image.getElement().setDraggable(Element.DRAGGABLE_TRUE);
+		
+		this.attachDragOverHandler(image);
+		this.attachDragStartHandler(image,row,col);
+		this.attachDragDropHandler(image,row,col);
+		
 	}
 
 	@Override
@@ -190,6 +212,7 @@ public class Graphics extends Composite implements View {
 			element.removeClassName(css.selected());
 		}
 	}
+
 
 	@Override
 	public void setWhoseTurn(Color color) {
@@ -227,9 +250,73 @@ public class Graphics extends Composite implements View {
 	public void setPromoteVisible(boolean visible) {
 		this.promoteGrid.setVisible(visible);
 	}
-	
+
 	@Override
 	public void setHistory(String hist){
 		History.newItem(hist);
+	}
+	
+	public void attachDragOverHandler(final Image image){
+		//drag over
+		image.addDragOverHandler(new DragOverHandler() {
+			public void onDragOver(DragOverEvent event) {
+				resetDragHighlighting();
+				image.getElement().setClassName(css.dragover());
+			}
+		});
+	}
+	
+	public void attachDragStartHandler(final Image image, final int row, final int col){		
+		// Add a DragStartHandler.
+		image.addDragStartHandler(new DragStartHandler() {
+			public void onDragStart(DragStartEvent event) {
+				// Required: set data for the event.
+				event.setData("fromRow", row + "");
+				event.setData("fromCol", col + "");
+
+				// Optional: show a copy of the widget under cursor.
+				event.getDataTransfer().setDragImage(image.getElement(),
+						10, 10);
+			}
+		});
+	}
+	
+	public void attachDragDropHandler(final Image image, final int row, final int col){		
+		// Add a DropHandler.
+		image.addDropHandler(new DropHandler() {
+			public void onDrop(DropEvent event) {
+				// Prevent the native text drop.
+				event.preventDefault();
+				// Get the data out of the event.
+				String fromRow = event.getData("fromRow");
+				String fromCol = event.getData("fromCol");
+				
+				if(!presenter.isPossibleMove(row, col, Integer.parseInt(fromRow), Integer.parseInt(fromCol))){
+					resetDragHighlighting();
+				}
+
+			}
+		});
+	}
+	
+	private void resetDragHighlighting(){
+		//remove all previous drag over classes
+		for (int r = 0; r < 8; r++) {
+			for (int c = 0; c < 8; c++) {
+				board[r][c].getElement().removeClassName(css.dragover());
+			}
+		}
+	}
+
+	@Override
+	public void doPieceAnimation(int row, int col, int toRow, int toCol) {
+		//		Element piece = board[toRow][toCol].getElement();
+		//		piece.getStyle().setOpacity(1);
+		//		PieceAnimation animation = new PieceAnimation(piece);
+		//		//Element toSquare = board[toRow][toCol].getElement();
+		//        animation.scrollTo(2000);
+		//        
+		//		//
+
 	}
 }

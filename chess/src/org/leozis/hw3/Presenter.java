@@ -1,6 +1,7 @@
 package org.leozis.hw3;
 
 import java.util.Set;
+
 import org.leozis.hw2.StateChangerImpl;
 import org.shared.chess.Color;
 import org.shared.chess.GameResult;
@@ -11,10 +12,6 @@ import org.shared.chess.Position;
 import org.shared.chess.State;
 import org.shared.chess.StateChanger;
 import org.shared.chess.StateExplorer;
-
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.History;
 
 public class Presenter {
 	public interface View {
@@ -44,6 +41,8 @@ public class Presenter {
 		void setPromoteVisible(boolean b);
 		
 		void setHistory(String hist);
+		
+		void doPieceAnimation(int row, int col, int toRow, int toCol);
 	}
 
 	private State state;
@@ -116,9 +115,11 @@ public class Presenter {
 				}else{ //if it is a non promote move, we simply see if it is legal and make the move.
 					Move m = new Move(this.getSelected(),new Position(invertR,col),null);
 					if(possibleMovesFromPosition.contains(m)){
+						//animation
 						stateChanger.makeMove(state, m);
 						this.setState(state);
 						view.setHistory(StateEncoder.encode(state));
+						//view.doPieceAnimation(7 - m.getFrom().getRow(), m.getFrom().getCol(), 7 - m.getTo().getRow(), m.getTo().getCol());				
 					}
 					this.setSelected(null);
 					this.clearHighlighted();
@@ -185,4 +186,23 @@ public class Presenter {
 			}
 		} 
 	}
+	
+	public boolean isPossibleMove(int row, int col, int fromRow, int fromCol){
+		int invertR = 7 - row;
+		int invertRFrom = 7 - fromRow;
+		
+		possibleMovesFromPosition = stateExplorer.getPossibleMovesFromPosition(state, new Position(invertRFrom,fromCol));
+
+		
+		Move m = new Move(new Position(invertRFrom, fromCol),new Position(invertR,col),null);
+		if(possibleMovesFromPosition.contains(m)){
+			stateChanger.makeMove(state, m);
+			this.setState(state);
+			view.setHistory(StateEncoder.encode(state));
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
 }
